@@ -1,0 +1,82 @@
+﻿@*@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Image and Text</title>
+<style>
+  #combinedInput {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #combinedInput input[type="file"] {
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+    <textarea id="textInput" placeholder="Enter text..."></textarea>
+    <button type="submit">Upload</button>
+  </form>
+
+  <script>
+    function previewImage(event) {
+      const imageFile = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        const imagePreview = document.createElement('img');
+        imagePreview.src = reader.result;
+
+        const combinedInput = document.getElementById('combinedInput');
+        combinedInput.insertBefore(imagePreview, document.getElementById('textInput'));
+      };
+
+      reader.readAsDataURL(imageFile);
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      const imageFile = document.getElementById('imageInput').files[0];
+      const textValue = document.getElementById('textInput').value;
+      
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      formData.append('text', textValue);
+      
+      // Here you can send the formData to your server using AJAX or any other method
+
+      // Example: Sending data using fetch API
+      fetch('upload.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(result => {
+        console.log(result);
+        // Handle the response from the server
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Handle errors
+      });
+    });
+  </script>
+</body>
+</html>
+
+*@

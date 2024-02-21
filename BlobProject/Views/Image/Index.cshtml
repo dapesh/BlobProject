@@ -1,0 +1,112 @@
+﻿@*@{
+    ViewBag.Title = "Image Upload";
+}
+
+<h2>Image Upload</h2>
+
+<form id="imageUploadForm">
+    <div class="form-group">
+        <label for="imageInput">Choose Image:</label>
+        <input type="file" id="imageInput" accept="image/*" />
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="uploadImage()">Upload Image</button>
+</form>
+
+<div id="result"></div>
+
+@section scripts {
+    <script>
+        function uploadImage() {
+            var fileInput = document.getElementById('imageInput');
+            var file = fileInput.files[0];
+
+            if (file) {
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (e) {
+                    var formData = e.target.result;
+                    var customerSNO = "123"; // Replace with your customerSNO logic
+                    var filePath = file.name;
+                    var docIMG = "yourDocIMGValue"; // Replace with your docIMG logic
+                    var Cid = "yourCidValue"; // Replace with your Cid logic
+
+                    $.ajax({
+                        url: '/Image/ImageUpload',
+                        type: 'POST',
+                        data: {
+                            formData: formData,
+                            customerSNO: customerSNO,
+                            filePath: filePath,
+                            docIMG: docIMG,
+                            Cid: Cid
+                        },
+                        success: function (data) {
+                            // Display the result on the page
+                            $('#result').html('<img src="' + data.imageurl + '" alt="Uploaded Image" />');
+                        },
+                        error: function () {
+                            alert('Error uploading image.');
+                        }
+                    });
+                };
+            }
+        }
+    </script>
+}
+
+
+*@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text and Image Editor</title>
+    <style>
+        .editor {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="editor" contenteditable="true" id="editor">
+        <!-- Initial content goes here -->
+    </div>
+    <input type="file" id="imageInput" style="display: none;">
+
+    <script>
+        // Function to handle image insertion
+        function insertImage() {
+            var input = document.getElementById('imageInput');
+            input.onchange = function (e) {
+                var file = e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        var img = document.createElement('img');
+                        img.src = event.target.result;
+                        document.getElementById('editor').appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+            input.click();
+        }
+
+        // Event listener for image insertion button
+        document.getElementById('insertImageBtn').addEventListener('click', function () {
+            insertImage();
+        });
+    </script>
+
+    <button id="insertImageBtn">Insert Image</button>
+
+</body>
+</html>
+
+
